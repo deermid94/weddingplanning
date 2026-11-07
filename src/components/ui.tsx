@@ -1,7 +1,7 @@
 "use client";
 
 import type { HiddenCostFlag } from "@/lib/types";
-import { SUPPLIER_TYPES, type SupplierType } from "@/lib/types";
+import { SUPPLIER_TYPES, VIBES, type SupplierType, type Vibe } from "@/lib/types";
 
 export const supplierLabel = (t: SupplierType) => SUPPLIER_TYPES.find((s) => s.value === t)?.label ?? t;
 
@@ -47,4 +47,23 @@ export function MethodBadge({ method }: { method: "llm" | "heuristic" | "seed" }
 
 export function Loading() {
   return <div className="py-20 text-center text-stone-400">Loading…</div>;
+}
+
+export function VibeChips({ vibes, onToggle, highlight }: { vibes?: Vibe[]; onToggle?: (v: Vibe) => void; highlight?: Vibe[] }) {
+  const list = onToggle ? VIBES : VIBES.filter((v) => vibes?.includes(v.value));
+  if (!list.length) return null;
+  return (
+    <span className="flex flex-wrap gap-1">
+      {list.map((v) => {
+        const on = vibes?.includes(v.value);
+        const match = highlight?.includes(v.value);
+        const cls = `rounded-full px-2 py-0.5 text-[11px] font-medium ${on ? (match ? "bg-emerald-100 text-emerald-900" : "bg-stone-100 text-stone-700") : "border border-dashed border-stone-300 text-stone-400"}`;
+        return onToggle ? (
+          <button key={v.value} type="button" className={cls} onClick={() => onToggle(v.value)} aria-pressed={on}>{v.emoji} {v.label}</button>
+        ) : (
+          <span key={v.value} className={cls}>{v.emoji} {v.label}</span>
+        );
+      })}
+    </span>
+  );
 }

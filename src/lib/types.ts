@@ -157,6 +157,86 @@ export interface Quote {
   flags: HiddenCostFlag[];
   payments: PaymentItem[];
   notes: string[];
+  vibes?: Vibe[];
+}
+
+export type Vibe = "luxury" | "woodland" | "coastal" | "rustic" | "castle" | "lakeside" | "country_house" | "boho" | "city" | "intimate";
+
+export const VIBES: { value: Vibe; label: string; emoji: string }[] = [
+  { value: "luxury", label: "Bougie / luxury", emoji: "✨" },
+  { value: "woodland", label: "Woodland / natural", emoji: "🌲" },
+  { value: "coastal", label: "By the sea", emoji: "🌊" },
+  { value: "rustic", label: "Rustic barn", emoji: "🌾" },
+  { value: "castle", label: "Castle / historic", emoji: "🏰" },
+  { value: "lakeside", label: "Lakeside", emoji: "🛶" },
+  { value: "country_house", label: "Country house", emoji: "🏡" },
+  { value: "boho", label: "Boho / festival", emoji: "🌼" },
+  { value: "city", label: "City / modern", emoji: "🏙️" },
+  { value: "intimate", label: "Small & intimate", emoji: "🕯️" },
+];
+
+export type PartyRole =
+  | "best_man"
+  | "maid_of_honour"
+  | "bridesmaid"
+  | "groomsman"
+  | "usher"
+  | "flower_girl"
+  | "page_boy"
+  | "reader"
+  | "mc"
+  | "witness"
+  | "singer"
+  | "helper";
+
+export interface Guest {
+  id: string;
+  name: string;
+  side: "ours" | "partner_a" | "partner_b";
+  group: string;
+  invite: "day" | "evening";
+  rsvp: "pending" | "yes" | "no";
+  plusOne: boolean;
+  child?: boolean;
+  dietary?: string;
+  needsRoom?: boolean;
+  role?: PartyRole;
+  jobs?: string[];
+  notes?: string;
+}
+
+export interface ShortlistItem {
+  id: string;
+  name: string;
+  category: string;
+  lat?: number;
+  lon?: number;
+  distanceKm?: number;
+  address?: string;
+  website?: string;
+  phone?: string;
+  instagram?: string;
+  osmUrl?: string;
+  quotedPrice?: number;
+  notes?: string;
+  status: "idea" | "contacted" | "quoted" | "booked";
+}
+
+export interface BudgetSplitItem {
+  key: string;
+  percent: number;
+  note?: string;
+}
+
+export interface WeddingPlan {
+  brief: string;
+  vibes: Vibe[];
+  summary: string;
+  priorities: string[];
+  budgetSplit: BudgetSplitItem[];
+  tips: string[];
+  method: "llm" | "heuristic";
+  createdAt: string;
 }
 
 export interface WeddingSettings {
@@ -189,4 +269,5 @@ export interface Extraction {
   flags: Omit<HiddenCostFlag, "id">[];
   payments: PaymentItem[];
   notes: string[];
+  vibes?: Vibe[];
 }

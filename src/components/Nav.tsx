@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
+  { href: "/plan", label: "Plan", icon: "M12 21s-7-4.5-9.5-9A5.5 5.5 0 0112 5.5 5.5 5.5 0 0121.5 12C19 16.5 12 21 12 21z" },
   { href: "/", label: "Quotes", icon: "M4 6h16M4 12h16M4 18h10" },
-  { href: "/add", label: "Add quote", icon: "M12 5v14M5 12h14" },
   { href: "/compare", label: "Compare", icon: "M6 20V10M12 20V4M18 20v-7" },
   { href: "/timeline", label: "Timeline", icon: "M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z" },
+  { href: "/guests", label: "Guests", icon: "M16 19v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 10a3 3 0 100-6 3 3 0 000 6zM22 19v-1a4 4 0 00-3-3.9M16 4.1a3 3 0 010 5.8" },
+  { href: "/find", label: "Find", icon: "M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3" },
 ];
 
 function Icon({ d }: { d: string }) {
@@ -20,7 +22,7 @@ function Icon({ d }: { d: string }) {
 
 export function Nav() {
   const path = usePathname();
-  const active = (href: string) => (href === "/" ? path === "/" || path.startsWith("/quote") : path.startsWith(href));
+  const active = (href: string) => (href === "/" ? path === "/" || path.startsWith("/quote") || path.startsWith("/add") : path.startsWith(href));
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/90 backdrop-blur">
@@ -45,9 +47,9 @@ export function Nav() {
         </div>
       </header>
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-6">
           {TABS.map((t) => (
-            <Link key={t.href} href={t.href} className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${active(t.href) ? "text-rose-700" : "text-stone-500"}`}>
+            <Link key={t.href} href={t.href} className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${active(t.href) ? "text-rose-700" : "text-stone-500"}`}>
               <Icon d={t.icon} />
               {t.label}
             </Link>

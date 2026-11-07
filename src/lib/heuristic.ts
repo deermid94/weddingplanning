@@ -1,3 +1,4 @@
+import { detectVibes } from "./planning";
 import { DEFAULT_SETTINGS, type Category, type CostLine, type Extraction, type HiddenCostFlag, type PaymentItem, type SupplierType, type WeddingSettings } from "./types";
 
 /**
@@ -284,5 +285,5 @@ export function heuristicExtract(text: string, settings: WeddingSettings = DEFAU
   }
   if (priceYear) notes.push(`Prices appear to be for ${priceYear}.`);
 
-  return { name, supplierType: guessSupplierType(text), priceYear, lines, flags, payments, notes: [...new Set(notes)] };
+  return { name, supplierType: guessSupplierType(text), priceYear, vibes: detectVibes(text), lines, flags, payments, notes: [...new Set(notes)] };
 }

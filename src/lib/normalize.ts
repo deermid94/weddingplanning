@@ -69,6 +69,10 @@ const ExtractionSchema = z.object({
   supplierType: enumOr(["venue", "photographer", "videographer", "band", "dj", "florist", "cake", "hair_makeup", "transport", "stationery", "celebrant", "other"], "venue"),
   location: str,
   priceYear: num,
+  vibes: z.preprocess(
+    (v) => (Array.isArray(v) ? v.filter((x) => ["luxury", "woodland", "coastal", "rustic", "castle", "lakeside", "country_house", "boho", "city", "intimate"].includes(x)).slice(0, 3) : []),
+    z.array(z.enum(["luxury", "woodland", "coastal", "rustic", "castle", "lakeside", "country_house", "boho", "city", "intimate"])),
+  ),
   lines: z.array(Line).default([]),
   flags: z.array(Flag).default([]),
   payments: z.array(Payment).default([]),
@@ -81,6 +85,21 @@ function stripUndefined<T>(o: T): T {
 
 export function normalizeExtraction(raw: unknown): Extraction {
   return stripUndefined(ExtractionSchema.parse(raw)) as Extraction;
+}
+
+const PlanSchema = z.object({
+  vibes: z.preprocess(
+    (v) => (Array.isArray(v) ? v.filter((x) => ["luxury", "woodland", "coastal", "rustic", "castle", "lakeside", "country_house", "boho", "city", "intimate"].includes(x)).slice(0, 3) : []),
+    z.array(z.enum(["luxury", "woodland", "coastal", "rustic", "castle", "lakeside", "country_house", "boho", "city", "intimate"])),
+  ),
+  summary: z.string().default(""),
+  priorities: z.array(z.string()).default([]),
+  budgetSplit: z.array(z.object({ key: z.string(), percent: num.transform((v) => v ?? 0), note: str })).default([]),
+  tips: z.array(z.string()).default([]),
+});
+
+export function normalizePlan(raw: unknown) {
+  return stripUndefined(PlanSchema.parse(raw));
 }
 
 /** Pull the first JSON object out of an LLM response. */

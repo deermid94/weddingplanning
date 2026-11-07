@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Loading, MethodBadge, supplierLabel } from "@/components/ui";
+import { Loading, MethodBadge, supplierLabel, VibeChips } from "@/components/ui";
 import { computeTotal, eur } from "@/lib/calc";
 import { bankHolidayWeekend, dayName, formatDate, monthsBetween, parseDate, today } from "@/lib/dates";
 import { useStore } from "@/lib/store";
 
 export default function Home() {
-  const { quotes, settings, ready, chosen } = useStore();
+  const { quotes, settings, ready, chosen, plan } = useStore();
   if (!ready) return <Loading />;
   const d = parseDate(settings.date);
   const bh = bankHolidayWeekend(d);
@@ -33,6 +33,13 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {!plan && (
+        <Link href="/plan" className="card block border-rose-200 bg-white hover:border-rose-300">
+          <p className="font-semibold">✨ Describe your dream wedding</p>
+          <p className="text-sm text-stone-600">Get your vibe, a budget split, venues ranked by fit and a running budget check.</p>
+        </Link>
+      )}
 
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-xl font-semibold">Quotes ({quotes.length})</h2>
@@ -61,6 +68,7 @@ export default function Home() {
                       {supplierLabel(q.supplierType)}
                       {q.location ? ` · ${q.location}` : ""}
                     </p>
+                    <div className="mt-1"><VibeChips vibes={q.vibes} highlight={plan?.vibes} /></div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <MethodBadge method={q.method} />

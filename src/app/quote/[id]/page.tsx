@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FlagCard, Loading, MethodBadge, Stat, supplierLabel } from "@/components/ui";
+import { FlagCard, Loading, MethodBadge, Stat, supplierLabel, VibeChips } from "@/components/ui";
 import { computeTotal, describeCondition, eur, type BreakdownRow } from "@/lib/calc";
 import { formatDate } from "@/lib/dates";
 import { extractQuote, useStore } from "@/lib/store";
@@ -29,7 +29,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 export default function QuotePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { quotes, settings, ready, updateQuote, removeQuote, chosen, choose, llm } = useStore();
+  const { quotes, settings, ready, updateQuote, removeQuote, chosen, choose, llm, setQuoteVibes } = useStore();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [showRaw, setShowRaw] = useState(false);
@@ -65,6 +65,7 @@ export default function QuotePage() {
         lines: extraction.lines.map((l) => ({ ...l, id: Math.random().toString(36).slice(2, 10) })),
         flags: extraction.flags.map((f) => ({ ...f, id: Math.random().toString(36).slice(2, 10) })),
         payments: extraction.payments,
+        vibes: extraction.vibes?.length ? extraction.vibes : q.vibes,
         notes: warning ? [warning, ...extraction.notes] : extraction.notes,
       }));
       setMsg(method === "llm" ? "Re-extracted with AI." : warning ?? "No AI key configured — re-extracted with the rule-based parser.");
@@ -91,6 +92,7 @@ export default function QuotePage() {
             {quote.priceYear && <span>· {quote.priceYear} prices</span>}
             <MethodBadge method={quote.method} />
           </p>
+          <div className="mt-2"><VibeChips vibes={quote.vibes} onToggle={(v) => setQuoteVibes(quote.id, quote.vibes?.includes(v) ? quote.vibes.filter((x) => x !== v) : [...(quote.vibes ?? []), v])} /></div>
         </div>
         <div className="flex flex-wrap gap-2">
           <button className={isChosen ? "btn bg-emerald-600 text-white hover:bg-emerald-700" : "btn-secondary"} onClick={() => choose(quote.supplierType, isChosen ? undefined : quote.id)}>

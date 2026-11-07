@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Loading, supplierLabel } from "@/components/ui";
+import { Loading, supplierLabel, VibeChips } from "@/components/ui";
 import { computeTotal, eur } from "@/lib/calc";
 import { useStore } from "@/lib/store";
-import type { SupplierType } from "@/lib/types";
+import { VIBES, type SupplierType, type Vibe } from "@/lib/types";
 
 type SortKey = "total" | "perGuest" | "hidden" | "flags";
 
 export default function Compare() {
-  const { quotes, settings, ready, chosen } = useStore();
+  const { quotes, settings, ready, chosen, plan } = useStore();
+  const [vibe, setVibe] = useState<Vibe | "">("");
   const types = [...new Set(quotes.map((q) => q.supplierType))];
   const [type, setType] = useState<SupplierType>("venue");
   const [sort, setSort] = useState<SortKey>("total");
@@ -19,6 +20,7 @@ export default function Compare() {
 
   const rows = quotes
     .filter((q) => q.supplierType === activeType)
+    .filter((q) => !vibe || q.vibes?.includes(vibe))
     .map((q) => {
       const t = computeTotal(q, settings);
       return { q, t, high: q.flags.filter((f) => f.severity === "high").length };
@@ -44,7 +46,11 @@ export default function Compare() {
             {supplierLabel(t)}
           </button>
         ))}
-        <select className="input ml-auto w-auto py-1.5" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sort by">
+        <select className="input ml-auto w-auto py-1.5" value={vibe} onChange={(e) => setVibe(e.target.value as Vibe | "")} aria-label="Filter by vibe">
+          <option value="">Any vibe</option>
+          {VIBES.map((v) => <option key={v.value} value={v.value}>{v.emoji} {v.label}</option>)}
+        </select>
+        <select className="input w-auto py-1.5" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sort by">
           <option value="total">Sort: true total</option>
           <option value="perGuest">Sort: cost per guest</option>
           <option value="hidden">Sort: hidden €</option>
@@ -99,6 +105,7 @@ export default function Compare() {
                 <tr key={q.id} className={t.total === cheapest ? "bg-emerald-50/50" : ""}>
                   <td className="sticky left-0 bg-white p-3">
                     <Link href={`/quote/${q.id}`} className="font-medium hover:underline">{q.name}</Link>
+                    <VibeChips vibes={q.vibes} highlight={plan?.vibes} />
                     <div className="flex gap-1">
                       {t.total === cheapest && <span className="text-[11px] font-medium text-emerald-700">Cheapest</span>}
                       {chosen[q.supplierType] === q.id && <span className="text-[11px] font-medium text-emerald-700">· Chosen</span>}
@@ -124,7 +131,8 @@ export default function Compare() {
         <section className="grid gap-3 sm:grid-cols-3">
           {rows.map(({ q }) => (
             <div key={q.id} className="card">
-              <p className="mb-2 font-semibold">{q.name}: top flags</p>
+              <p className="font-semibold">{q.name}: top flags</p>
+              <div className="mb-2"><VibeChips vibes={q.vibes} highlight={plan?.vibes} /></div>
               <ul className="space-y-1 text-sm">
                 {q.flags.filter((f) => f.severity !== "low").slice(0, 4).map((f) => (
                   <li key={f.id} className="flex gap-2">

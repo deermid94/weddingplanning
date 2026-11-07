@@ -123,6 +123,7 @@ export const SEED_BROCHURES: SeedBrochure[] = [
     extraction: {
       name: "Glenmacnass Lodge Hotel",
       supplierType: "venue",
+      vibes: ["luxury", "country_house", "woodland"],
       location: "Roundwood, Co. Wicklow",
       priceYear: 2026,
       lines: [
@@ -161,6 +162,7 @@ export const SEED_BROCHURES: SeedBrochure[] = [
     extraction: {
       name: "Vartry Barn Estate",
       supplierType: "venue",
+      vibes: ["rustic", "boho", "woodland"],
       location: "Near Roundwood, Co. Wicklow",
       priceYear: 2026,
       lines: [
@@ -206,6 +208,7 @@ export const SEED_BROCHURES: SeedBrochure[] = [
     extraction: {
       name: "Lough Dan House Hotel",
       supplierType: "venue",
+      vibes: ["lakeside", "country_house", "intimate"],
       location: "Laragh Road, near Roundwood, Co. Wicklow",
       priceYear: 2027,
       lines: [

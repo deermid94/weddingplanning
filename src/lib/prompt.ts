@@ -14,6 +14,7 @@ Extract EVERY cost line from the text and return ONLY a JSON object with this ex
   "supplierType": "venue"|"photographer"|"videographer"|"band"|"dj"|"florist"|"cake"|"hair_makeup"|"transport"|"stationery"|"celebrant"|"other",
   "location": string|null,
   "priceYear": number|null,             // year the prices are quoted for, if stated
+  "vibes": string[],                    // up to 3 describing the place/style: "luxury"|"woodland"|"coastal"|"rustic"|"castle"|"lakeside"|"country_house"|"boho"|"city"|"intimate"
   "lines": [{
     "label": string,
     "category": "venue_hire"|"ceremony"|"day_food"|"evening_food"|"drinks"|"accommodation"|"staff_service"|"supplement"|"extras"|"tax"|"supplier_fee"|"other",
