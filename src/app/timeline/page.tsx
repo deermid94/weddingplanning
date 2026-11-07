@@ -51,7 +51,7 @@ export default function Timeline() {
             <p className="font-serif text-3xl font-semibold text-rose-800">{eur(plan.cashflowMonthly)}</p>
             <p className="text-xs text-rose-900/70">
               {plan.bindingPayment
-                ? `Front-loaded so you can pay "${plan.bindingPayment.label}" (${plan.bindingPayment.supplier}) on ${formatDate(plan.bindingPayment.due)}.`
+                ? `Paced so you have enough for ${plan.bindingPayment.supplier} — ${plan.bindingPayment.label} — by ${formatDate(plan.bindingPayment.due)}.`
                 : `Enough to cover every payment on time.`}
             </p>
           </div>

@@ -129,12 +129,15 @@ function estimateUnchosen(settings: WeddingSettings, chosen: Partial<Record<Supp
   const otherShare = 1 - Object.values(TYPICAL_SHARE).reduce((a, b) => a + (b ?? 0), 0);
   const totalShare = shares.reduce((a, b) => a + b, 0) + otherShare;
   const out: PaymentDue[] = [];
+  let balances = 0;
   open.forEach((m, i) => {
     const amount = (unallocated * shares[i]) / totalShare;
     const bookBy = monthsBefore(wedding, m.byMonths);
-    out.push({ supplier: `${m.title.replace(/^Book /, "")} (est.)`, label: "Deposit ~25% on booking", due: bookBy < now ? now : bookBy, amount: amount * 0.25, assumed: true });
-    out.push({ supplier: `${m.title.replace(/^Book /, "")} (est.)`, label: "Balance", due: monthsBefore(wedding, 1), amount: amount * 0.75, assumed: true });
+    const name = m.title.replace(/^(Book|Order) /, "");
+    out.push({ supplier: `${name.charAt(0).toUpperCase()}${name.slice(1)} (est.)`, label: "Deposit ~25% on booking", due: bookBy < now ? now : bookBy, amount: amount * 0.25, assumed: true });
+    balances += amount * 0.75;
   });
+  if (balances > 0) out.push({ supplier: "Supplier balances (est.)", label: "~75% balances", due: monthsBefore(wedding, 1), amount: balances, assumed: true });
   out.push({ supplier: "Dress, rings, suits & other (est.)", label: "Spread before the day", due: monthsBefore(wedding, 2), amount: (unallocated * otherShare) / totalShare, assumed: true });
   return out;
 }
