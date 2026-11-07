@@ -40,7 +40,7 @@ export default function Guests() {
           <h1 className="font-serif text-2xl font-semibold">Guests & wedding party</h1>
           <p className="text-sm text-stone-600">{counts.invited} invited · {counts.confirmed} confirmed · {counts.declined} declined</p>
         </div>
-        <button className="btn-primary" onClick={() => setEditing(EMPTY())}>+ Guest</button>
+        <button className="btn-primary shrink-0 whitespace-nowrap" onClick={() => setEditing(EMPTY())}>+ Guest</button>
       </div>
 
       <section className="grid grid-cols-3 gap-2">

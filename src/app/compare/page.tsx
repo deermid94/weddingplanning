@@ -48,7 +48,7 @@ export default function Compare() {
         ))}
         <select className="input ml-auto w-auto py-1.5" value={vibe} onChange={(e) => setVibe(e.target.value as Vibe | "")} aria-label="Filter by vibe">
           <option value="">Any vibe</option>
-          {VIBES.map((v) => <option key={v.value} value={v.value}>{v.emoji} {v.label}</option>)}
+          {VIBES.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
         </select>
         <select className="input w-auto py-1.5" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sort by">
           <option value="total">Sort: true total</option>

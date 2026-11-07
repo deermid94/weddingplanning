@@ -59,11 +59,38 @@ export function VibeChips({ vibes, onToggle, highlight }: { vibes?: Vibe[]; onTo
         const match = highlight?.includes(v.value);
         const cls = `rounded-full px-2 py-0.5 text-[11px] font-medium ${on ? (match ? "bg-emerald-100 text-emerald-900" : "bg-stone-100 text-stone-700") : "border border-dashed border-stone-300 text-stone-400"}`;
         return onToggle ? (
-          <button key={v.value} type="button" className={cls} onClick={() => onToggle(v.value)} aria-pressed={on}>{v.emoji} {v.label}</button>
+          <button key={v.value} type="button" className={cls} onClick={() => onToggle(v.value)} aria-pressed={on}>{v.label}</button>
         ) : (
-          <span key={v.value} className={cls}>{v.emoji} {v.label}</span>
+          <span key={v.value} className={cls}>{v.label}</span>
         );
       })}
     </span>
+  );
+}
+
+/** Decorative eucalyptus/olive sprig in sage + champagne line art. */
+export function Botanical({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 160 160" fill="none" aria-hidden className={`pointer-events-none ${className}`}>
+      <g stroke="#7f9c6e" strokeWidth="1.2" strokeLinecap="round" opacity="0.7">
+        <path d="M150 10C110 40 70 80 30 150" />
+        {[0, 1, 2, 3, 4, 5].map((i) => {
+          const t = 0.12 + i * 0.14;
+          const x = 150 - 120 * t;
+          const y = 10 + 140 * t;
+          return (
+            <g key={i}>
+              <path d={`M${x} ${y}c-14-6-22-2-28 6c12 6 22 4 28-6z`} fill="#c8d7bd" fillOpacity="0.45" />
+              <path d={`M${x} ${y}c4-14 12-20 22-20c-2 12-10 18-22 20z`} fill="#c8d7bd" fillOpacity="0.45" />
+            </g>
+          );
+        })}
+      </g>
+      <g fill="#d3b06b" opacity="0.8">
+        <circle cx="120" cy="22" r="2" />
+        <circle cx="62" cy="96" r="1.6" />
+        <circle cx="44" cy="128" r="1.3" />
+      </g>
+    </svg>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Loading, VibeChips } from "@/components/ui";
+import { Loading, VibeChips, Botanical } from "@/components/ui";
 import { computeTotal, eur } from "@/lib/calc";
 import { BUDGET_CATEGORIES, budgetLabel, DEFAULT_SPLIT } from "@/lib/planning";
 import { generatePlan, guestCounts, useStore } from "@/lib/store";
@@ -94,7 +94,7 @@ export default function Plan() {
             <div className="flex flex-wrap gap-2">
               {EXAMPLES.map((e, i) => (
                 <button key={i} className="rounded-full border border-stone-300 bg-white px-3 py-1 text-xs text-stone-600" onClick={() => setBrief(e)}>
-                  {["🌲 Woodland & relaxed", "✨ Bougie country house", "🌊 Seaside boho"][i]}
+                  {["Woodland & relaxed", "Bougie country house", "Seaside boho"][i]}
                 </button>
               ))}
             </div>
@@ -117,7 +117,9 @@ export default function Plan() {
       </section>
 
       {plan && (
-        <section className="card space-y-3 bg-gradient-to-br from-rose-50 to-white">
+        <section className="card relative space-y-3 overflow-hidden bg-gradient-to-br from-rose-50 via-white to-emerald-50/60">
+          <Botanical className="absolute -top-6 -right-8 h-32 w-32" />
+          <p className="eyebrow relative">Your wedding, in a sentence</p>
           <VibeChips vibes={plan.vibes} />
           <p className="font-serif text-lg">{plan.summary}</p>
           {plan.priorities.length > 0 && (

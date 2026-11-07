@@ -14,7 +14,7 @@ const TABS = [
 
 function Icon({ d }: { d: string }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d={d} />
     </svg>
   );
@@ -25,19 +25,22 @@ export function Nav() {
   const active = (href: string) => (href === "/" ? path === "/" || path.startsWith("/quote") || path.startsWith("/add") : path.startsWith(href));
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/90 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-[#ebe1d2] bg-[#fbf8f3]/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-rose-700 font-serif text-sm font-bold text-white">€</span>
-            <span className="font-serif text-lg font-semibold">Wedding Quote Decoder</span>
+            <span className="grid h-9 w-9 place-items-center rounded-full border border-amber-400/70 bg-white font-script text-xl text-rose-700 shadow-sm">W</span>
+            <span className="leading-none">
+              <span className="block font-serif text-[15px] font-semibold tracking-[0.18em] text-stone-800 uppercase">Wedding Quote</span>
+              <span className="-mt-0.5 block font-script text-xl text-rose-600">Decoder</span>
+            </span>
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">
             {TABS.map((t) => (
-              <Link key={t.href} href={t.href} className={`rounded-lg px-3 py-2 text-sm font-medium ${active(t.href) ? "bg-rose-50 text-rose-800" : "text-stone-600 hover:bg-stone-100"}`}>
+              <Link key={t.href} href={t.href} className={`rounded-full px-3.5 py-1.5 text-sm tracking-wide ${active(t.href) ? "bg-rose-100/70 text-rose-800" : "text-stone-600 hover:text-rose-700"}`}>
                 {t.label}
               </Link>
             ))}
-            <Link href="/settings" className={`rounded-lg px-3 py-2 text-sm font-medium ${active("/settings") ? "bg-rose-50 text-rose-800" : "text-stone-600 hover:bg-stone-100"}`}>
+            <Link href="/settings" className={`rounded-full px-3.5 py-1.5 text-sm tracking-wide ${active("/settings") ? "bg-rose-100/70 text-rose-800" : "text-stone-600 hover:text-rose-700"}`}>
               Settings
             </Link>
           </nav>
@@ -46,10 +49,11 @@ export function Nav() {
           </Link>
         </div>
       </header>
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-[#ebe1d2] bg-[#fbf8f3]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden">
         <div className="grid grid-cols-6">
           {TABS.map((t) => (
-            <Link key={t.href} href={t.href} className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${active(t.href) ? "text-rose-700" : "text-stone-500"}`}>
+            <Link key={t.href} href={t.href} className={`relative flex flex-col items-center gap-0.5 py-2 text-[10px] tracking-wide ${active(t.href) ? "text-rose-700" : "text-stone-500"}`}>
+              {active(t.href) && <span className="absolute top-0 h-0.5 w-6 rounded-full bg-rose-400" />}
               <Icon d={t.icon} />
               {t.label}
             </Link>

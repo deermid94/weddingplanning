@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Loading, MethodBadge, supplierLabel, VibeChips } from "@/components/ui";
+import { Loading, MethodBadge, supplierLabel, VibeChips, Botanical } from "@/components/ui";
 import { computeTotal, eur } from "@/lib/calc";
 import { bankHolidayWeekend, dayName, formatDate, monthsBetween, parseDate, today } from "@/lib/dates";
 import { useStore } from "@/lib/store";
@@ -16,15 +16,19 @@ export default function Home() {
 
   return (
     <div className="space-y-5">
-      <section className="card bg-gradient-to-br from-rose-50 to-white">
-        <p className="text-xs font-medium tracking-wide text-rose-700 uppercase">Your wedding</p>
-        <h1 className="mt-1 font-serif text-2xl font-semibold sm:text-3xl">
-          {dayName(d)} {formatDate(d, { day: "numeric", month: "long", year: "numeric" })}
-        </h1>
-        <p className="mt-1 text-sm text-stone-600">
-          {settings.dayGuests} day guests · {settings.eveningGuests} in the evening · {settings.location} · {months} months to go
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+      <section className="card relative overflow-hidden bg-gradient-to-br from-rose-50 via-white to-emerald-50/60 py-8 text-center sm:py-10">
+        <Botanical className="absolute -top-4 -right-6 h-36 w-36 sm:h-44 sm:w-44" />
+        <Botanical className="absolute -bottom-6 -left-6 h-32 w-32 rotate-180 sm:h-40 sm:w-40" />
+        <div className="relative">
+          <p className="eyebrow">Our wedding day</p>
+          <p className="mt-3 text-[11px] tracking-[0.3em] text-stone-500 uppercase">{dayName(d)}</p>
+          <p className="font-serif text-4xl font-medium sm:text-5xl">{formatDate(d, { day: "numeric", month: "long", year: "numeric" })}</p>
+          <p className="mx-auto mt-2 max-w-md text-sm text-stone-600">
+            {settings.location} · {settings.dayGuests} day guests · {settings.eveningGuests} in the evening
+          </p>
+          <p className="mt-1 font-serif text-lg text-rose-700 italic">{months} months to go</p>
+        </div>
+        <div className="relative mt-4 flex flex-wrap justify-center gap-2 text-xs">
           {d.getUTCDay() === 6 && <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-900">Saturday — premiums likely</span>}
           {[5, 6, 7, 8, 9].includes(d.getUTCMonth() + 1) && <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-900">Peak season</span>}
           {bh && <span className="rounded-full bg-red-100 px-2.5 py-1 font-medium text-red-900">{bh} weekend</span>}
@@ -36,7 +40,8 @@ export default function Home() {
 
       {!plan && (
         <Link href="/plan" className="card block border-rose-200 bg-white hover:border-rose-300">
-          <p className="font-semibold">✨ Describe your dream wedding</p>
+          <p className="eyebrow">Dream it first</p>
+          <p className="mt-1 font-serif text-lg font-semibold">Describe your dream wedding →</p>
           <p className="text-sm text-stone-600">Get your vibe, a budget split, venues ranked by fit and a running budget check.</p>
         </Link>
       )}

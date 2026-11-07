@@ -98,7 +98,7 @@ export default function AddQuote() {
             </button>
             <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && onPdf(e.target.files[0])} />
           </div>
-          <textarea id="text" className="input min-h-72 font-mono text-xs leading-relaxed sm:text-xs" placeholder="Paste the full brochure, price list or email quote here…" value={text} onChange={(e) => setText(e.target.value)} />
+          <textarea id="text" className="input min-h-72 text-sm leading-relaxed" placeholder="Paste the full brochure, price list or email quote here…" value={text} onChange={(e) => setText(e.target.value)} />
           <p className="mt-1 text-xs text-stone-500">{text.length.toLocaleString()} characters</p>
         </div>
 

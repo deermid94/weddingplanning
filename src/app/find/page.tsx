@@ -73,14 +73,14 @@ export default function Find() {
             <label className="label" htmlFor="vibe">Vibe</label>
             <select id="vibe" className="input" value={vibe} onChange={(e) => setVibe(e.target.value)}>
               <option value="">Any</option>
-              {VIBES.map((v) => <option key={v.value} value={v.value}>{v.emoji} {v.label}</option>)}
+              {VIBES.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
             </select>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {FINDER_CATEGORIES.map((c) => (
             <button key={c.key} onClick={() => { setCat(c.key); setPlaces(null); setError(""); }} className={`rounded-full px-3 py-1.5 text-sm ${c.key === cat ? "bg-rose-700 text-white" : "border border-stone-300 bg-white"}`}>
-              {c.emoji} {c.label}
+              {c.label}
             </button>
           ))}
         </div>
@@ -90,7 +90,7 @@ export default function Find() {
       </section>
 
       <section className="card space-y-2">
-        <p className="text-xs font-medium tracking-wide text-stone-500 uppercase">{category.emoji} Typical price in Ireland</p>
+        <p className="text-xs font-medium tracking-wide text-stone-500 uppercase">Typical price in Ireland</p>
         <p className="font-semibold">{category.price}</p>
         <div className="flex flex-wrap gap-2 pt-1 text-sm">
           <a className="btn-secondary py-1.5" href={links.instagram} target="_blank" rel="noreferrer">Instagram #{links.instagram.split("/tags/")[1].replace("/", "")}</a>
@@ -167,7 +167,7 @@ function Shortlist({ items, onChange, onRemove }: { items: ShortlistItem[]; onCh
       {items.length === 0 && !adding && <p className="text-sm text-stone-500">Save businesses from the search, or add ones you found on Instagram. Add quoted prices to keep an eye on your budget on the Plan page.</p>}
       {byCat.map(({ c, list }) => (
         <div key={c.key}>
-          <p className="mb-1 text-xs font-medium tracking-wide text-stone-500 uppercase">{c.emoji} {c.label}</p>
+          <p className="mb-1 text-xs font-medium tracking-wide text-stone-500 uppercase">{c.label}</p>
           <ul className="space-y-2">
             {list.map((i) => (
               <li key={i.id} className="rounded-lg border border-stone-200 p-3">

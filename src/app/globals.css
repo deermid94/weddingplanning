@@ -1,8 +1,73 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
   --font-serif: var(--font-serif-display);
+  --font-script: var(--font-script);
+}
+
+/* Wedding palette: dusty rose (rose), warm taupe (stone), sage (emerald), champagne (amber) */
+@theme {
+  --color-rose-50: #fbf4f2;
+  --color-rose-100: #f6e5e0;
+  --color-rose-200: #ecccc3;
+  --color-rose-300: #dfaea0;
+  --color-rose-400: #cc8b7b;
+  --color-rose-500: #b8705f;
+  --color-rose-600: #a05a4b;
+  --color-rose-700: #8a4a3e;
+  --color-rose-800: #703c33;
+  --color-rose-900: #57302a;
+
+  --color-stone-50: #fbf8f3;
+  --color-stone-100: #f4efe7;
+  --color-stone-200: #e9e0d3;
+  --color-stone-300: #d8ccbb;
+  --color-stone-400: #b5a793;
+  --color-stone-500: #8d806e;
+  --color-stone-600: #6f6456;
+  --color-stone-700: #574e43;
+  --color-stone-800: #403930;
+  --color-stone-900: #2c2722;
+
+  --color-emerald-50: #f2f5ef;
+  --color-emerald-100: #e2eadb;
+  --color-emerald-200: #c8d7bd;
+  --color-emerald-500: #7f9c6e;
+  --color-emerald-600: #68855b;
+  --color-emerald-700: #56714b;
+  --color-emerald-800: #455b3d;
+  --color-emerald-900: #35462f;
+
+  --color-amber-50: #fbf6ea;
+  --color-amber-100: #f5ebd2;
+  --color-amber-200: #ead8aa;
+  --color-amber-400: #d3b06b;
+  --color-amber-600: #a98236;
+  --color-amber-800: #7a5d24;
+  --color-amber-900: #5f481c;
+
+  --color-sky-50: #f3f5f6;
+  --color-sky-100: #e4eaec;
+  --color-sky-200: #ccd7db;
+  --color-sky-700: #4d6168;
+  --color-sky-800: #3e4f55;
+  --color-sky-900: #303e43;
+  --color-blue-50: #f3f5f6;
+  --color-blue-100: #e4eaec;
+  --color-blue-200: #ccd7db;
+  --color-blue-700: #4d6168;
+  --color-blue-800: #3e4f55;
+  --color-blue-900: #303e43;
+
+  --color-red-50: #fbf0ee;
+  --color-red-100: #f5ddd9;
+  --color-red-200: #eabcb5;
+  --color-red-500: #c45c4e;
+  --color-red-600: #ad4c40;
+  --color-red-700: #933f35;
+  --color-red-800: #77332b;
+  --color-red-900: #5d2822;
 }
 
 :root {
@@ -10,25 +75,51 @@
 }
 
 body {
-  background: #faf7f5;
-  color: #1c1917;
+  color: #2c2722;
+  background-color: #fbf8f3;
+  background-image:
+    radial-gradient(1200px 500px at 100% -10%, rgba(236, 204, 195, 0.35), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(200, 215, 189, 0.3), transparent 60%);
+  background-attachment: fixed;
+}
+
+main h1.font-serif {
+  font-size: 2.15rem;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+main h1.font-serif::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 14px;
+  margin: 0.5rem 0 0.25rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' fill='none' stroke='%23b8a06a' stroke-width='1'%3E%3Cpath d='M0 7h44M76 7h44'/%3E%3Cpath d='M50 7c3-4 7-4 10 0c3 4 7 4 10 0' stroke='%237f9c6e'/%3E%3Ccircle cx='60' cy='7' r='1.6' fill='%23b8a06a' stroke='none'/%3E%3C/svg%3E") no-repeat left center;
+}
+main h2.font-serif {
+  font-weight: 600;
+  font-size: 1.3rem;
 }
 
 @utility card {
-  @apply rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5;
+  @apply rounded-[1.25rem] border border-[#ebe1d2] bg-white/85 p-4 shadow-[0_1px_2px_rgba(80,60,40,0.04),0_10px_30px_-18px_rgba(80,60,40,0.25)] backdrop-blur-sm sm:p-6;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium tracking-wide transition disabled:opacity-50;
 }
 @utility btn-primary {
-  @apply btn bg-rose-700 text-white hover:bg-rose-800;
+  @apply btn bg-rose-700 text-[#fdf9f4] shadow-[0_6px_16px_-8px_rgba(138,74,62,0.6)] hover:bg-rose-800;
 }
 @utility btn-secondary {
-  @apply btn border border-stone-300 bg-white text-stone-800 hover:bg-stone-50;
+  @apply btn border border-[#e0d3c0] bg-white/90 text-stone-800 hover:border-rose-300 hover:bg-rose-50;
 }
 @utility input {
-  @apply w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-base outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 sm:text-sm;
+  @apply w-full rounded-xl border border-[#e3d8c8] bg-white/90 px-3.5 py-2.5 text-base outline-none placeholder:text-stone-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 sm:text-sm;
 }
 @utility label {
-  @apply mb-1 block text-xs font-medium tracking-wide text-stone-500 uppercase;
+  @apply mb-1.5 block text-[11px] font-medium tracking-[0.14em] text-stone-500 uppercase;
+}
+@utility eyebrow {
+  @apply font-script text-2xl leading-none text-rose-600;
 }
