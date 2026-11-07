@@ -21,6 +21,7 @@ export const MILESTONES: Milestone[] = [
   { key: "band", title: "Book band", supplierType: "band", fromMonths: 18, byMonths: 12, tip: "Check whether the price includes a DJ set, travel to Wicklow and a late-night slot." },
   { key: "videographer", title: "Book videographer", supplierType: "videographer", fromMonths: 15, byMonths: 10, tip: "Often bundled with photographers for a discount." },
   { key: "save_the_date", title: "Send save-the-dates", fromMonths: 12, byMonths: 9, tip: "Important with a bank-holiday weekend date — guests book holidays early." },
+  { key: "accommodation", title: "Block-book guest rooms", fromMonths: 12, byMonths: 9, tip: "Ask the venue and two nearby hotels to hold rooms at a wedding rate — the Guests page counts who needs one." },
   { key: "dress", title: "Order dress", fromMonths: 12, byMonths: 9, tip: "Made-to-order dresses typically take 6–9 months plus alterations." },
   { key: "hair_makeup", title: "Book hair & make-up", supplierType: "hair_makeup", fromMonths: 12, byMonths: 9, tip: "Ask about travel/call-out fees to Roundwood and early-start surcharges." },
   { key: "florist", title: "Book florist", supplierType: "florist", fromMonths: 12, byMonths: 8, tip: "June is peony season — popular, but prices can be higher." },
@@ -28,10 +29,13 @@ export const MILESTONES: Milestone[] = [
   { key: "transport", title: "Book transport", supplierType: "transport", fromMonths: 9, byMonths: 6, tip: "Coach for guests from Dublin/Bray is worth pricing — rural Wicklow taxis are scarce late at night." },
   { key: "cake", title: "Book cake", supplierType: "cake", fromMonths: 9, byMonths: 6, tip: "Ask the venue about cake-cutting fees." },
   { key: "stationery", title: "Order invitations", supplierType: "stationery", fromMonths: 7, byMonths: 5, tip: "Invitations go out ~3 months before; order 2 months before that." },
-  { key: "marriage_notification", title: "HSE marriage notification", fromMonths: 6, byMonths: 3, tip: "Legal requirement in Ireland: in-person notification to a registrar at least 3 months before. Appointments book up — schedule it 6 months out." },
+  { key: "marriage_notification", title: "HSE marriage notification", fromMonths: 6, byMonths: 3, tip: "Legal requirement in Ireland: in-person notification to a registrar at least 3 months before. Both of you, in person, €200 fee. Appointments book up — schedule it 6 months out." },
+  { key: "insurance", title: "Arrange wedding insurance", fromMonths: 12, byMonths: 4, tip: "Covers supplier failure and cancellation — cheap next to the deposits at risk." },
+  { key: "honeymoon", title: "Book honeymoon & check passports", fromMonths: 9, byMonths: 4, tip: "June bank-holiday flights fill early." },
   { key: "rings", title: "Buy rings", fromMonths: 6, byMonths: 3, tip: "Allow time for sizing and engraving." },
   { key: "invites_out", title: "Send invitations", fromMonths: 4, byMonths: 3, tip: "RSVP deadline ~6 weeks before, to give the venue final numbers." },
   { key: "suits", title: "Book suits", fromMonths: 4, byMonths: 2, tip: "Hire suits need fittings around 4–6 weeks before." },
+  { key: "delegate", title: "Hand out day-of jobs", fromMonths: 2, byMonths: 0.5, tip: "Cards box, decor home, licence, supplier tips — assign them on the Guests page." },
   { key: "final_numbers", title: "Final numbers to venue", fromMonths: 1, byMonths: 0.5, tip: "Usually 14–21 days before. After this you pay for the numbers you gave." },
 ];
 

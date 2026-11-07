@@ -1,4 +1,4 @@
-import type { BudgetSplitItem, PartyRole, Vibe, WeddingPlan, WeddingSettings } from "./types";
+import type { BudgetSplitItem, PartyRole, ShortlistItem, Vibe, WeddingPlan, WeddingSettings } from "./types";
 
 const VIBE_WORDS: Record<Vibe, RegExp> = {
   luxury: /\b(luxur\w*|5[- ]star|five[- ]star|bougie|glam\w*|black[- ]tie|champagne|opulent|elegan\w*|chandelier|ballroom|spa)\b/i,
@@ -23,14 +23,14 @@ export function detectVibes(text: string, max = 3): Vibe[] {
 
 export const BUDGET_CATEGORIES: { key: string; label: string; supplierTypes?: string[]; finder?: string[] }[] = [
   { key: "venue", label: "Venue, food & drink", supplierTypes: ["venue"], finder: ["venue", "catering"] },
-  { key: "photo_video", label: "Photo & video", supplierTypes: ["photographer", "videographer"], finder: ["photographer"] },
-  { key: "music", label: "Band / DJ", supplierTypes: ["band", "dj"] },
-  { key: "attire", label: "Dress, suits & rings", finder: ["bridal"] },
-  { key: "flowers_decor", label: "Flowers & decor", supplierTypes: ["florist"], finder: ["florist"] },
+  { key: "photo_video", label: "Photo & video", supplierTypes: ["photographer", "videographer"], finder: ["photographer", "videographer"] },
+  { key: "music", label: "Band / DJ", supplierTypes: ["band", "dj"], finder: ["music"] },
+  { key: "attire", label: "Dress, suits & rings", finder: ["bridal", "rings"] },
+  { key: "flowers_decor", label: "Flowers & decor", supplierTypes: ["florist"], finder: ["florist", "decor"] },
   { key: "hair_makeup", label: "Hair & make-up", supplierTypes: ["hair_makeup"], finder: ["hair", "makeup"] },
-  { key: "ceremony", label: "Ceremony & celebrant", supplierTypes: ["celebrant"], finder: ["ceremony"] },
+  { key: "ceremony", label: "Ceremony & celebrant", supplierTypes: ["celebrant"], finder: ["ceremony", "registry"] },
   { key: "transport", label: "Transport", supplierTypes: ["transport"], finder: ["transport"] },
-  { key: "cake_stationery", label: "Cake, stationery & favours", supplierTypes: ["cake", "stationery"], finder: ["cake"] },
+  { key: "cake_stationery", label: "Cake, stationery & favours", supplierTypes: ["cake", "stationery"], finder: ["cake", "stationery"] },
   { key: "accommodation", label: "Your accommodation", finder: ["accommodation"] },
   { key: "contingency", label: "Contingency (hidden costs!)" },
 ];
@@ -161,20 +161,31 @@ export interface FinderCategory {
   priceHigh: number;
   search: string;
   hashtag: string;
+  /** usually mobile: offer "travels to you" search + call-out guide */
+  travels?: boolean;
+  callout?: string;
 }
 
+export const shortlistCost = (s: ShortlistItem) => (s.quotedPrice ?? 0) + (s.calloutFee ?? 0);
+
 export const FINDER_CATEGORIES: FinderCategory[] = [
-  { key: "venue", terms: ["wedding venue", "hotel", "castle", "events venue"], label: "Venues & hotels", emoji: "🏰", osm: ['"amenity"="events_venue"', '"tourism"="hotel"', '"historic"="castle"["tourism"]', '"building"="barn"["tourism"]'], price: "€12k–€30k for 100 guests (food & drink incl.)", priceLow: 12000, priceHigh: 30000, search: "wedding venue", hashtag: "weddingvenue" },
-  { key: "catering", terms: ["caterer", "catering"], label: "Catering", emoji: "🍽️", osm: ['"craft"="caterer"', '"shop"="deli"', '"amenity"="restaurant"["cuisine"~"pizza|bbq|burger"]'], price: "€45–€95 per head; food trucks €12–€20pp evening", priceLow: 4500, priceHigh: 9500, search: "wedding caterer", hashtag: "weddingcatering" },
-  { key: "photographer", terms: ["photographer", "photography"], label: "Photographers", emoji: "📷", osm: ['"craft"="photographer"', '"shop"="photo"', '"office"="photographer"'], price: "€2,000–€4,000 full day; video €1,800–€3,500", priceLow: 2000, priceHigh: 4000, search: "wedding photographer", hashtag: "weddingphotographer" },
-  { key: "hair", terms: ["hairdresser", "hair salon"], label: "Hairdressers", emoji: "💇", osm: ['"shop"="hairdresser"'], price: "Bride €150–€250 + €60–€90 per bridesmaid; call-out €50–€150", priceLow: 400, priceHigh: 800, search: "bridal hair", hashtag: "bridalhair" },
-  { key: "makeup", terms: ["beauty salon", "make up artist"], label: "Make-up & beauty", emoji: "💄", osm: ['"shop"="beauty"', '"shop"="cosmetics"'], price: "Bride €150–€300 + €70–€100 per person; trial €80–€120", priceLow: 400, priceHigh: 900, search: "bridal makeup artist", hashtag: "bridalmakeup" },
-  { key: "accommodation", terms: ["hotel", "guest house", "bed and breakfast"], label: "Guest accommodation", emoji: "🛏️", osm: ['"tourism"="hotel"', '"tourism"="guest_house"', '"tourism"="chalet"', '"tourism"="apartment"', '"tourism"="hostel"'], price: "€120–€250 per room per night on a June Saturday", priceLow: 120, priceHigh: 250, search: "accommodation", hashtag: "wicklow" },
-  { key: "florist", terms: ["florist"], label: "Florists", emoji: "💐", osm: ['"shop"="florist"', '"shop"="garden_centre"'], price: "€1,000–€3,500 (bouquets, buttonholes, tables)", priceLow: 1000, priceHigh: 3500, search: "wedding florist", hashtag: "weddingflowers" },
-  { key: "cake", terms: ["bakery", "cake"], label: "Cake & bakers", emoji: "🎂", osm: ['"shop"="bakery"', '"shop"="pastry"', '"shop"="confectionery"'], price: "€400–€900 for 100–130 portions", priceLow: 400, priceHigh: 900, search: "wedding cake", hashtag: "weddingcake" },
-  { key: "bridal", terms: ["bridal", "wedding dress", "jeweller"], label: "Bridal & suits", emoji: "👗", osm: ['"shop"="wedding"', '"shop"="clothes"["clothes"~"wedding|suits"]', '"shop"="jewelry"'], price: "Dress €1,200–€3,500; suit hire €100–€180 each; rings €1,500–€4,000", priceLow: 1500, priceHigh: 5000, search: "bridal shop", hashtag: "irishbride" },
-  { key: "transport", terms: ["taxi", "car hire", "coach hire"], label: "Transport", emoji: "🚐", osm: ['"amenity"="taxi"', '"shop"="car_rental"', '"amenity"="car_rental"', '"office"="travel_agent"'], price: "Wedding car €400–€800; guest coach €400–€700", priceLow: 400, priceHigh: 1500, search: "wedding car hire", hashtag: "weddingcar" },
-  { key: "ceremony", terms: ["church"], label: "Churches & ceremony spots", emoji: "⛪", osm: ['"amenity"="place_of_worship"'], price: "Church donation €200–€500; solemniser €350–€600", priceLow: 200, priceHigh: 600, search: "wedding celebrant", hashtag: "irishwedding" },
+  { key: "venue", terms: ["wedding venue", "hotel", "castle", "events venue"], label: "Venues & hotels", emoji: "", osm: ['"amenity"="events_venue"', '"tourism"="hotel"', '["historic"="castle"]["tourism"]', '["building"="barn"]["tourism"]'], price: "€12k–€30k for 100 guests (food & drink incl.)", priceLow: 12000, priceHigh: 30000, search: "wedding venue", hashtag: "weddingvenue" },
+  { key: "catering", terms: ["caterer", "catering", "food truck"], label: "Catering", emoji: "", osm: ['"craft"="caterer"', '"shop"="deli"', '["amenity"="restaurant"]["cuisine"~"pizza|bbq|burger"]'], price: "€45–€95 per head; food trucks €12–€20pp evening", priceLow: 4500, priceHigh: 9500, search: "wedding caterer", hashtag: "weddingcatering", travels: true, callout: "Caterers and food trucks travel to the venue; ask for travel and staffing costs." },
+  { key: "photographer", terms: ["photographer", "photography"], label: "Photographers", emoji: "", osm: ['"craft"="photographer"', '"shop"="photo"', '"office"="photographer"'], price: "€2,000–€4,000 full day", priceLow: 2000, priceHigh: 4000, search: "wedding photographer", hashtag: "weddingphotographer", travels: true, callout: "Most photographers cover all of Leinster; some add mileage beyond ~50 km." },
+  { key: "videographer", terms: ["videographer", "video production"], label: "Videographers", emoji: "", osm: ['["craft"="photographer"]["name"~"[Vv]ideo|[Ff]ilm"]', '["office"="company"]["name"~"[Vv]ideo|[Ff]ilm"]', '["shop"="video"]'], price: "€1,800–€3,500 (highlight film + full ceremony)", priceLow: 1800, priceHigh: 3500, search: "wedding videographer", hashtag: "weddingvideographer", travels: true, callout: "Videographers travel nationwide; ask about mileage." },
+  { key: "hair", terms: ["hairdresser", "hair salon", "mobile hairdresser"], label: "Hairdressers", emoji: "", osm: ['"shop"="hairdresser"'], price: "Bride €150–€250 + €60–€90 per bridesmaid", priceLow: 400, priceHigh: 800, search: "bridal hair", hashtag: "bridalhair", travels: true, callout: "Call-out to your house or venue €50–€150; starts before 7am often +€25–€50 each." },
+  { key: "makeup", terms: ["beauty", "beauty salon", "make up artist"], label: "Make-up artists", emoji: "", osm: ['"shop"="beauty"'], price: "Bride €150–€300 + €70–€100 per person; trial €80–€120", priceLow: 400, priceHigh: 900, search: "bridal makeup artist", hashtag: "bridalmakeup", travels: true, callout: "Most MUAs come to you: call-out €50–€150, more for very early starts or over ~40 km." },
+  { key: "accommodation", terms: ["hotel", "guest house", "bed and breakfast"], label: "Guest accommodation", emoji: "", osm: ['"tourism"="hotel"', '"tourism"="guest_house"', '"tourism"="chalet"', '"tourism"="apartment"', '"tourism"="hostel"'], price: "€120–€250 per room per night on a June Saturday", priceLow: 120, priceHigh: 250, search: "accommodation", hashtag: "wicklow" },
+  { key: "music", terms: ["wedding band", "dj", "musician", "music"], label: "Bands & DJs", emoji: "", osm: ['"shop"="music"', '"amenity"="music_school"', '"shop"="musical_instrument"'], price: "Band €2,500–€4,500; DJ €500–€900; ceremony musicians €350–€700", priceLow: 2500, priceHigh: 4500, search: "wedding band", hashtag: "weddingband", travels: true, callout: "Bands travel nationwide; check travel and late-finish fees." },
+  { key: "florist", terms: ["florist"], label: "Florists", emoji: "", osm: ['"shop"="florist"', '"shop"="garden_centre"'], price: "€1,000–€3,500 (bouquets, buttonholes, tables)", priceLow: 1000, priceHigh: 3500, search: "wedding florist", hashtag: "weddingflowers", travels: true, callout: "Delivery and set-up at the venue usually €50–€150." },
+  { key: "decor", terms: ["marquee hire", "party hire", "event hire"], label: "Decor & marquee hire", emoji: "", osm: ['"shop"="party"', '"craft"="event_hire"'], price: "Styling €500–€2,500; marquee €4,000–€12,000", priceLow: 500, priceHigh: 2500, search: "wedding decor hire", hashtag: "weddingstyling", travels: true },
+  { key: "cake", terms: ["bakery", "cake"], label: "Cake & bakers", emoji: "", osm: ['"shop"="bakery"', '"shop"="pastry"', '"shop"="confectionery"'], price: "€400–€900 for 100–130 portions", priceLow: 400, priceHigh: 900, search: "wedding cake", hashtag: "weddingcake", travels: true, callout: "Delivery and set-up €40–€100." },
+  { key: "stationery", terms: ["stationery", "printing", "print shop"], label: "Invitations & stationery", emoji: "", osm: ['"shop"="stationery"', '"shop"="copyshop"', '"craft"="printer"'], price: "€400–€1,200 (save-the-dates, invites, on-the-day)", priceLow: 400, priceHigh: 1200, search: "wedding stationery", hashtag: "weddingstationery" },
+  { key: "bridal", terms: ["bridal", "wedding dress", "menswear", "suit hire"], label: "Dresses & suits", emoji: "", osm: ['"shop"="wedding"', '["shop"="clothes"]["clothes"~"wedding|suits|men"]'], price: "Dress €1,200–€3,500; suit hire €100–€180 each", priceLow: 1200, priceHigh: 3500, search: "bridal shop", hashtag: "irishbride" },
+  { key: "rings", terms: ["jeweller", "jewellery"], label: "Rings & jewellers", emoji: "", osm: ['"shop"="jewelry"', '"craft"="jeweller"'], price: "€1,500–€4,000 for both bands", priceLow: 1500, priceHigh: 4000, search: "wedding rings jeweller", hashtag: "weddingrings" },
+  { key: "transport", terms: ["taxi", "car hire", "coach hire"], label: "Transport", emoji: "", osm: ['"amenity"="taxi"', '"shop"="car_rental"', '"amenity"="car_rental"', '"office"="travel_agent"'], price: "Wedding car €400–€800; guest coach €400–€700", priceLow: 400, priceHigh: 1500, search: "wedding car hire", hashtag: "weddingcar", travels: true },
+  { key: "ceremony", terms: ["church"], label: "Churches & ceremony spots", emoji: "", osm: ['"amenity"="place_of_worship"'], price: "Church donation €200–€500", priceLow: 200, priceHigh: 500, search: "wedding church", hashtag: "irishwedding" },
+  { key: "registry", terms: ["registry office", "civil registration", "celebrant"], label: "Registry & solemnisers", emoji: "", osm: ['["office"="government"]["government"="register_office"]', '["office"="register"]'], price: "HSE notice €200; solemniser €350–€600", priceLow: 200, priceHigh: 800, search: "wedding celebrant solemniser", hashtag: "irishcelebrant", travels: true, callout: "Solemnisers travel to your venue; some add mileage." },
 ];
 
 export function haversineKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {

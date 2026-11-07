@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loading } from "@/components/ui";
 import { eur } from "@/lib/calc";
 import { FINDER_CATEGORIES, searchLinks } from "@/lib/planning";
-import { findPlaces, geocode, type Place } from "@/lib/places";
+import { findPlaces, geocode, MAX_RADIUS, type Place, type PlaceResults } from "@/lib/places";
 import { uid, useStore } from "@/lib/store";
 import { VIBES, type ShortlistItem } from "@/lib/types";
 
@@ -20,6 +20,9 @@ export default function Find() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [where, setWhere] = useState("");
+  const [refining, setRefining] = useState(false);
+  const [shown, setShown] = useState<{ radius: number; asked: number; widened: boolean; travels: boolean } | null>(null);
+  const [travels, setTravels] = useState(true);
 
   useEffect(() => {
     if (ready && !location) setLocation(settings.location);
@@ -35,10 +38,23 @@ export default function Find() {
     setLoading(true);
     setError("");
     setPlaces(null);
+    setRefining(false);
     try {
       const c = await geocode(location || settings.location);
-      setWhere(c.name.split(",").slice(0, 2).join(","));
-      setPlaces(await findPlaces(key, c, radius, (more) => setPlaces((cur) => (cur ? more : cur))));
+      setWhere(c.name.split(",")[0]);
+      const mobile = travels && !!FINDER_CATEGORIES.find((x) => x.key === key)?.travels;
+      const show = (r: PlaceResults) => {
+        setPlaces(r.places);
+        setShown({ radius: r.radius, asked: radius, widened: r.widened, travels: mobile });
+      };
+      let settled = false;
+      const first = await findPlaces(key, c, radius, { travels: mobile }, (more) => {
+        settled = true;
+        show(more);
+        setRefining(false);
+      });
+      show(first);
+      if (!settled && first.places.length) setRefining(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -48,7 +64,7 @@ export default function Find() {
 
   const saved = new Set(shortlist.map((s) => s.id));
   const save = (p: Place) =>
-    upsertShortlist({ id: p.id, name: p.name, category: cat, lat: p.lat, lon: p.lon, distanceKm: p.distanceKm, address: p.address, website: p.website, phone: p.phone, instagram: p.instagram, osmUrl: p.osmUrl, status: "idea" });
+    upsertShortlist({ id: p.id, name: p.name, category: cat, lat: p.lat, lon: p.lon, distanceKm: p.distanceKm, address: p.address, website: p.website, phone: p.phone, instagram: p.instagram, osmUrl: p.osmUrl, status: "idea", travels: !!category.travels && p.distanceKm > radius });
 
   return (
     <div className="space-y-5">
@@ -84,14 +100,24 @@ export default function Find() {
             </button>
           ))}
         </div>
+        {category.travels && (
+          <label className="flex items-start gap-2 rounded-xl bg-rose-50/70 p-3 text-sm">
+            <input type="checkbox" className="mt-1 accent-rose-700" checked={travels} onChange={(e) => setTravels(e.target.checked)} />
+            <span>
+              <span className="font-medium">Include ones who travel to you</span>
+              <span className="block text-xs text-stone-600">Searches up to {MAX_RADIUS} km for mobile {category.label.toLowerCase()}. {category.callout}</span>
+            </span>
+          </label>
+        )}
         <button className="btn-primary w-full sm:w-auto" disabled={loading} onClick={() => search()}>
-          {loading ? "Searching the map… (can take ~30s)" : `Find ${category.label.toLowerCase()} near ${location || settings.location}`}
+          {loading ? "Searching the map…" : `Find ${category.label.toLowerCase()} near ${location || settings.location}`}
         </button>
       </section>
 
       <section className="card space-y-2">
         <p className="text-xs font-medium tracking-wide text-stone-500 uppercase">Typical price in Ireland</p>
         <p className="font-semibold">{category.price}</p>
+        {category.callout && <p className="text-sm text-stone-600">{category.callout}</p>}
         <div className="flex flex-wrap gap-2 pt-1 text-sm">
           <a className="btn-secondary py-1.5" href={links.instagram} target="_blank" rel="noreferrer">Instagram #{links.instagram.split("/tags/")[1].replace("/", "")}</a>
           <a className="btn-secondary py-1.5" href={links.instagramGeneric} target="_blank" rel="noreferrer">Instagram #{links.instagramGeneric.split("/tags/")[1].replace("/", "")}</a>
@@ -105,13 +131,22 @@ export default function Find() {
 
       {places && (
         <section className="card">
-          <h2 className="mb-2 font-serif text-lg font-semibold">{places.length} {category.label.toLowerCase()} within {radius} km of {where}</h2>
-          {places.length === 0 && <p className="text-sm text-stone-500">Nothing on the map here. Try a bigger radius or the Instagram / Google links above.</p>}
+          <h2 className="mb-1 font-serif text-lg font-semibold">
+            {places.length} {category.label.toLowerCase()} {shown?.travels ? `within ${shown.radius} km who could travel to` : `within ${shown?.radius ?? radius} km of`} {where}
+          </h2>
+          {shown?.widened && (
+            <p className="mb-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              Only {places.filter((p) => p.distanceKm <= shown.asked).length} within {shown.asked} km, so the search widened to {shown.radius} km to give you at least 5 options.
+            </p>
+          )}
+          {refining && <p className="mb-2 text-xs text-stone-500">Checking the full map for more…</p>}
+          {places.length === 0 && <p className="text-sm text-stone-500">Nothing on the map within {shown?.radius ?? radius} km. {category.label} mostly work from Instagram and word of mouth, so use the Instagram / Google links above and add them to your shortlist below.</p>}
           <ul className="divide-y divide-stone-100">
             {places.slice(0, 60).map((p) => (
               <li key={p.id} className="flex items-start gap-3 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{p.name}</p>
+                  {shown && category.travels && p.distanceKm > shown.asked && <p className="text-[11px] font-medium text-amber-800">Outside {shown.asked} km · ask about call-out / travel fee</p>}
                   <p className="text-xs text-stone-500">{p.distanceKm.toFixed(1)} km{p.kind ? ` · ${p.kind.replace(/_/g, " ")}` : ""}{p.address ? ` · ${p.address}` : ""}</p>
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-rose-700">
                     {p.website && <a href={p.website} target="_blank" rel="noreferrer">Website</a>}
@@ -188,9 +223,18 @@ function Shortlist({ items, onChange, onRemove }: { items: ShortlistItem[]; onCh
                   </select>
                   <input className="input py-1.5 text-sm" type="number" inputMode="numeric" placeholder="Quote €" value={i.quotedPrice ?? ""} onChange={(e) => onChange({ ...i, quotedPrice: e.target.value ? +e.target.value : undefined, status: e.target.value && i.status === "idea" ? "quoted" : i.status })} aria-label="Quoted price" />
                 </div>
+                {c.travels && (
+                  <div className="mt-2 grid grid-cols-2 items-center gap-2">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" className="accent-rose-700" checked={!!i.travels} onChange={(e) => onChange({ ...i, travels: e.target.checked })} />
+                      Travels to us
+                    </label>
+                    {i.travels && <input className="input py-1.5 text-sm" type="number" inputMode="numeric" placeholder="Call-out €" value={i.calloutFee ?? ""} onChange={(e) => onChange({ ...i, calloutFee: e.target.value ? +e.target.value : undefined })} aria-label="Call-out fee" />}
+                  </div>
+                )}
                 {i.quotedPrice != null && (
                   <p className={`mt-1 text-xs ${i.quotedPrice > c.priceHigh ? "text-red-700" : i.quotedPrice < c.priceLow ? "text-emerald-700" : "text-stone-500"}`}>
-                    {eur(i.quotedPrice)}: {i.quotedPrice > c.priceHigh ? "above" : i.quotedPrice < c.priceLow ? "below" : "within"} the typical range
+                    {eur(i.quotedPrice)}{i.calloutFee ? ` + ${eur(i.calloutFee)} call-out` : ""}: {i.quotedPrice > c.priceHigh ? "above" : i.quotedPrice < c.priceLow ? "below" : "within"} the typical range
                   </p>
                 )}
               </li>

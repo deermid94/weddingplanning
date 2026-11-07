@@ -220,6 +220,9 @@ export interface ShortlistItem {
   quotedPrice?: number;
   notes?: string;
   status: "idea" | "contacted" | "quoted" | "booked";
+  /** mobile supplier (MUA, hair) who travels to you */
+  travels?: boolean;
+  calloutFee?: number;
 }
 
 export interface BudgetSplitItem {
