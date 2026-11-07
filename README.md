@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wedding Quote Decoder
 
-## Getting Started
+Reverse-engineer the **true cost** of wedding venues and suppliers. Paste a brochure or quote (or upload a PDF), and the app:
 
-First, run the development server:
+1. Extracts every cost line with an LLM — per-head prices, fixed fees, minimum spends, service charge %, VAT, corkage, room guarantees, evening food, extras, deposit and payment schedule.
+2. Flags hidden or conditional costs — "from" prices, peak-season and Saturday supplements, Irish bank-holiday weekends, minimum numbers, minimum spends, VAT-exclusive prices, prices quoted for an earlier year.
+3. Calculates the true total for your guest numbers and date, line by line (editable).
+4. Compares suppliers on true total, cost per guest and number of hidden costs.
+5. Builds a reverse timeline from the wedding date: booking deadlines by supplier type, and a cash-flow-aware monthly savings target for your budget.
+
+Seeded with 3 fictional Co. Wicklow venue brochures (sample PDFs in `public/samples/`).
+
+## Run locally
 
 ```bash
+npm install
+cp .env.example .env.local   # optional: add an LLM key
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## AI extraction
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Set **one** of `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `GEMINI_API_KEY` (server-side env var; model overridable with `*_MODEL`).
+Alternatively paste a key on the Settings page — it's kept in the browser's localStorage and sent with each extraction request.
+With no key, a built-in rule-based parser is used (less thorough; review its output).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy for free (Vercel)
 
-## Learn More
+1. Push this repo to GitHub.
+2. On [vercel.com/new](https://vercel.com/new) import the repo (framework auto-detected as Next.js).
+3. Add your LLM key under **Settings → Environment Variables**, then deploy.
 
-To learn more about Next.js, take a look at the following resources:
+Data is stored per browser (localStorage) — there's no database.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How the true total is calculated
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Per-head lines × day guests / all evening guests / evening-only guests, with package-included heads (`freeQuantity`) and minimum numbers (`minQuantity`) applied.
+- "From" prices use a realistic estimate where the brochure allows it.
+- Conditional supplements only apply if the wedding date matches (day of week, month, Irish bank-holiday weekend).
+- Minimum spends charge the shortfall; service charges then VAT are applied as percentages of food & drink or subtotal.
+- Prices quoted for an earlier year are uplifted by the annual inflation assumption (Settings).
+- Optional extras and worst-case risks (e.g. unsold room guarantees) are listed separately and can be ticked into the total.

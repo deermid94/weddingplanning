@@ -1,103 +1,90 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { Loading, MethodBadge, supplierLabel } from "@/components/ui";
+import { computeTotal, eur } from "@/lib/calc";
+import { bankHolidayWeekend, dayName, formatDate, monthsBetween, parseDate, today } from "@/lib/dates";
+import { useStore } from "@/lib/store";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { quotes, settings, ready, chosen } = useStore();
+  if (!ready) return <Loading />;
+  const d = parseDate(settings.date);
+  const bh = bankHolidayWeekend(d);
+  const months = Math.max(0, Math.floor(monthsBetween(today(), d)));
+  const chosenIds = new Set(Object.values(chosen));
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="space-y-5">
+      <section className="card bg-gradient-to-br from-rose-50 to-white">
+        <p className="text-xs font-medium tracking-wide text-rose-700 uppercase">Your wedding</p>
+        <h1 className="mt-1 font-serif text-2xl font-semibold sm:text-3xl">
+          {dayName(d)} {formatDate(d, { day: "numeric", month: "long", year: "numeric" })}
+        </h1>
+        <p className="mt-1 text-sm text-stone-600">
+          {settings.dayGuests} day guests · {settings.eveningGuests} in the evening · {settings.location} · {months} months to go
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+          {d.getUTCDay() === 6 && <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-900">Saturday — premiums likely</span>}
+          {[5, 6, 7, 8, 9].includes(d.getUTCMonth() + 1) && <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-900">Peak season</span>}
+          {bh && <span className="rounded-full bg-red-100 px-2.5 py-1 font-medium text-red-900">{bh} weekend</span>}
+          <Link href="/settings" className="rounded-full border border-stone-300 bg-white px-2.5 py-1 font-medium text-stone-700">
+            Edit details
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      <div className="flex items-center justify-between">
+        <h2 className="font-serif text-xl font-semibold">Quotes ({quotes.length})</h2>
+        <Link href="/add" className="btn-primary">
+          + Add quote
+        </Link>
+      </div>
+
+      {quotes.length === 0 && (
+        <div className="card text-center text-stone-500">
+          No quotes yet. <Link href="/add" className="text-rose-700 underline">Paste a brochure</Link> to decode it.
+        </div>
+      )}
+
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {quotes.map((q) => {
+          const t = computeTotal(q, settings);
+          const pct = t.advertised > 0 ? Math.round((t.hiddenAmount / t.advertised) * 100) : 0;
+          return (
+            <li key={q.id}>
+              <Link href={`/quote/${q.id}`} className="card block transition hover:border-rose-300 hover:shadow-md">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold">{q.name}</p>
+                    <p className="text-xs text-stone-500">
+                      {supplierLabel(q.supplierType)}
+                      {q.location ? ` · ${q.location}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <MethodBadge method={q.method} />
+                    {chosenIds.has(q.id) && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800">Chosen</span>}
+                  </div>
+                </div>
+                <div className="mt-3 flex items-end justify-between">
+                  <div>
+                    <p className="text-xs text-stone-500">True total</p>
+                    <p className="font-serif text-2xl font-semibold">{eur(t.total)}</p>
+                    <p className="text-xs text-stone-500">{eur(t.perDayGuest)} per day guest</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-red-700">+{eur(t.hiddenAmount)} hidden</p>
+                    <p className="text-xs text-stone-500">
+                      {q.flags.length} flags · {pct}% over headline
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
